@@ -1,0 +1,233 @@
+import { useState } from 'react'
+import { STUB_TOPICS, STUB_KEYWORDS } from '../data/stubs.js'
+
+const TREND_DATA = [
+  { year: 2019, 'Coal Reserve Estimation': 72, 'Environmental Compliance': 48, 'Safety & DGMS': 42, 'Production Targets': 65 },
+  { year: 2020, 'Coal Reserve Estimation': 74, 'Environmental Compliance': 55, 'Safety & DGMS': 50, 'Production Targets': 68 },
+  { year: 2021, 'Coal Reserve Estimation': 78, 'Environmental Compliance': 61, 'Safety & DGMS': 55, 'Production Targets': 70 },
+  { year: 2022, 'Coal Reserve Estimation': 82, 'Environmental Compliance': 68, 'Safety & DGMS': 58, 'Production Targets': 74 },
+  { year: 2023, 'Coal Reserve Estimation': 85, 'Environmental Compliance': 73, 'Safety & DGMS': 61, 'Production Targets': 76 },
+  { year: 2024, 'Coal Reserve Estimation': 89, 'Environmental Compliance': 78, 'Safety & DGMS': 65, 'Production Targets': 76 },
+]
+const TREND_KEYS = ['Coal Reserve Estimation', 'Environmental Compliance', 'Safety & DGMS', 'Production Targets']
+const TREND_COLORS = ['#116871', '#F5A08D', '#24777F', '#7cb8bb']
+
+export default function WordCloud() {
+  const [ready,     setReady]     = useState(false)
+  const [loading,   setLoading]   = useState(false)
+  const [nTopics,   setNTopics]   = useState(8)
+  const [algo,      setAlgo]      = useState('TF-IDF')
+  const [scope,     setScope]     = useState('Full Corpus')
+  const [scopeSub,  setScopeSub]  = useState('ECL')
+
+  const handleGenerate = () => {
+    setLoading(true); setReady(false)
+    setTimeout(() => { setLoading(false); setReady(true) }, 1800)
+  }
+
+  return (
+    <div>
+      <div className="page-title">Word Cloud &amp; Topic Identification Module</div>
+      <div className="page-subtitle">
+        Automatically identifies dominant themes and key terminology across all indexed
+        mining and geological documents. Supports full-corpus or per-subsidiary analysis,
+        with historical trend tracking over time.
+      </div>
+
+      {/* Controls */}
+      <div className="form-section">
+        <div className="form-section-title">Analysis Configuration</div>
+        <div className="form-row-4" style={{ alignItems: 'flex-end' }}>
+          <div className="form-group">
+            <label className="form-label">Algorithm</label>
+            <select className="form-select" value={algo} onChange={e => setAlgo(e.target.value)}>
+              <option value="TF-IDF">TF-IDF (fast · local)</option>
+              <option value="BERTopic">BERTopic (semantic · accurate)</option>
+            </select>
+            <div className="form-hint">{algo === 'TF-IDF' ? 'Recommended for demo / quick runs' : 'Large install; takes 2-3 min first run'}</div>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Number of Topics</label>
+            <input className="form-input" type="number" min={3} max={15}
+              value={nTopics} onChange={e => setNTopics(+e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Analysis Scope</label>
+            <select className="form-select" value={scope} onChange={e => setScope(e.target.value)}>
+              <option>Full Corpus</option>
+              <option>By Subsidiary</option>
+              <option>By Document Type</option>
+              <option>By Year Range</option>
+            </select>
+          </div>
+          {scope === 'By Subsidiary' && (
+            <div className="form-group">
+              <label className="form-label">Subsidiary</label>
+              <select className="form-select" value={scopeSub} onChange={e => setScopeSub(e.target.value)}>
+                {['ECL','BCCL','CCL','NCL','SECL','WCL','MCL','HQ'].map(s =>
+                  <option key={s}>{s}</option>)}
+              </select>
+            </div>
+          )}
+        </div>
+        <button className="btn btn-primary" onClick={handleGenerate} disabled={loading}>
+          {loading ? '⟳ Analysing corpus…' : '☁ Generate Word Cloud & Topics'}
+        </button>
+      </div>
+
+      {loading && (
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--primary)', marginBottom: 6 }}>
+            Running {algo} analysis…
+          </div>
+          <div className="progress-bar-wrap">
+            <div className="progress-bar-fill" style={{ width: '60%', animation: 'none' }} />
+          </div>
+        </div>
+      )}
+
+      {ready && (
+        <>
+          <hr className="section-divider" />
+
+          {/* Word cloud + topics side by side */}
+          <div className="grid-2" style={{ marginBottom: 24 }}>
+            <div>
+              <div className="section-title">Word Cloud</div>
+              <div className="wc-placeholder">
+                <span style={{ fontSize: '3rem' }}>☁</span>
+                <span style={{ fontWeight: 600 }}>Word cloud image renders here</span>
+                <span style={{ fontSize: '0.72rem' }}>
+                  Generated by the Python <code>wordcloud</code> library after ingestion
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                <button className="btn btn-outline btn-sm">⬇ Download PNG</button>
+                <button className="btn btn-outline btn-sm">⬇ Download SVG</button>
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 8 }}>
+                Corpus: 8 documents · ~2,400 chunks · stopwords &amp; mine-specific terms removed
+              </div>
+            </div>
+
+            <div>
+              <div className="section-title">
+                Identified Topics &nbsp;
+                <span className="badge badge-primary">{algo}</span>
+              </div>
+              {STUB_TOPICS.slice(0, nTopics).map((t, i) => (
+                <div key={i} className="topic-item">
+                  <div className="topic-label">
+                    <span>#{i + 1} {t.label}</span>
+                    <span className="topic-pct">{Math.round(t.weight * 100)}%</span>
+                  </div>
+                  <div className="progress-bar-wrap">
+                    <div className="progress-bar-fill" style={{ width: `${Math.round(t.weight * 100)}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Keywords */}
+          <div className="section-title">Top Keywords (TF-IDF Corpus-wide)</div>
+          <div className="kw-cloud" style={{ marginBottom: 24 }}>
+            {STUB_KEYWORDS.map((kw, i) => (
+              <span key={i} className="kw-tag">⋅ {kw}</span>
+            ))}
+          </div>
+
+          <hr className="section-divider" />
+
+          {/* Topic table */}
+          <div className="section-title">Topic Detail Table</div>
+          <div className="table-wrap" style={{ marginBottom: 24 }}>
+            <table>
+              <thead>
+                <tr><th>#</th><th>Topic Label</th><th>Weight</th><th>Representative Keywords</th></tr>
+              </thead>
+              <tbody>
+                {STUB_TOPICS.slice(0, nTopics).map((t, i) => (
+                  <tr key={i}>
+                    <td>{i + 1}</td>
+                    <td><strong>{t.label}</strong></td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div className="progress-bar-wrap" style={{ width: 80 }}>
+                          <div className="progress-bar-fill" style={{ width: `${Math.round(t.weight * 100)}%` }} />
+                        </div>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600 }}>
+                          {Math.round(t.weight * 100)}%
+                        </span>
+                      </div>
+                    </td>
+                    <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {STUB_KEYWORDS.slice(i * 3, i * 3 + 4).join(', ')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Historical trend — simple SVG bar chart */}
+          <div className="section-title">Historical Topic Trend (2019 – 2024)</div>
+          <div className="card" style={{ padding: '20px 24px' }}>
+            <div style={{ display: 'flex', gap: 16, marginBottom: 12, flexWrap: 'wrap' }}>
+              {TREND_KEYS.map((k, i) => (
+                <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.72rem' }}>
+                  <div style={{ width: 12, height: 3, background: TREND_COLORS[i], borderRadius: 2 }} />
+                  {k}
+                </div>
+              ))}
+            </div>
+            <svg viewBox="0 0 600 200" style={{ width: '100%', height: 200 }}>
+              {/* Y grid */}
+              {[0,25,50,75,100].map(v => (
+                <g key={v}>
+                  <line x1="40" x2="590" y1={180 - v * 1.6} y2={180 - v * 1.6}
+                    stroke="#e0ecec" strokeWidth="1" />
+                  <text x="35" y={184 - v * 1.6} textAnchor="end"
+                    fontSize="9" fill="var(--text-muted)">{v}</text>
+                </g>
+              ))}
+              {/* Lines per key */}
+              {TREND_KEYS.map((key, ki) => {
+                const pts = TREND_DATA.map((d, di) => {
+                  const x = 50 + di * ((540) / (TREND_DATA.length - 1))
+                  const y = 180 - d[key] * 1.6
+                  return `${x},${y}`
+                }).join(' ')
+                return (
+                  <g key={key}>
+                    <polyline fill="none" stroke={TREND_COLORS[ki]} strokeWidth="2"
+                      points={pts} strokeLinejoin="round" />
+                    {TREND_DATA.map((d, di) => {
+                      const x = 50 + di * ((540) / (TREND_DATA.length - 1))
+                      const y = 180 - d[key] * 1.6
+                      return <circle key={di} cx={x} cy={y} r="3" fill={TREND_COLORS[ki]} />
+                    })}
+                  </g>
+                )
+              })}
+              {/* X axis labels */}
+              {TREND_DATA.map((d, di) => {
+                const x = 50 + di * ((540) / (TREND_DATA.length - 1))
+                return <text key={d.year} x={x} y="196" textAnchor="middle"
+                  fontSize="9" fill="var(--text-muted)">{d.year}</text>
+              })}
+            </svg>
+          </div>
+        </>
+      )}
+
+      {!ready && !loading && (
+        <div className="alert alert-info" style={{ marginTop: 16 }}>
+          <span>ℹ</span>
+          Configure the analysis settings above and click "Generate" to run topic identification.
+          In demo mode, stub topics are shown. Ingest documents for real corpus analysis.
+        </div>
+      )}
+    </div>
+  )
+}

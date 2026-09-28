@@ -55,25 +55,137 @@ export const DATA_SOURCES = [
   { type: 'Live Portal / API Data',         support: '⏳ Phase 5',    notes: 'MoEFCC / DGMS portal feeds' },
 ]
 
-export const STUB_ANSWER = {
-  answer: `Based on the geological survey reports and annual production data, **coal reserves in the Eastern Coalfields region are estimated at approximately 18.7 billion tonnes** as of FY 2023-24. The Jharia coalfield alone accounts for nearly 19% of India's total prime coking coal reserves. Seam thickness varies between 1.2 m and 6.4 m across the surveyed blocks, with an average ash content of 24.3%. Production in Q3 FY 2023-24 reached **142.6 MT**, reflecting a 7.2% YoY increase driven by improved mechanisation in underground mines.`,
-  sources: [
-    { doc: 'CMPDI_Annual_Geological_Survey_Report_2023.pdf',  page: 14, score: 0.92, excerpt: '...total proven reserves in the Eastern Coalfields zone stand at 18.7 billion tonnes as assessed by GSI in collaboration with CMPDI during 2022-23...' },
-    { doc: 'ECL_Production_Report_Q3_FY2024.pdf',             page: 6,  score: 0.87, excerpt: '...quarterly coal dispatch reached 142.6 MT, surpassing the target of 138 MT. Improvement attributed to enhanced longwall deployment in Jharia and Raniganj blocks...' },
-    { doc: 'Jharia_Coalfield_Resource_Assessment_2022.pdf',   page: 22, score: 0.81, excerpt: '...prime coking coal reserves in Jharia coalfield estimated at 3.55 billion tonnes, representing 19.0% of the national total prime coking coal reserve base...' },
+export const HISTORICAL_ARCHIVES = [
+  { id: 'HA-1984-JH', year: 1984, mine: 'Jharia Coalfield', sub: 'BCCL', title: 'Deep Seam Stratigraphy & Firedamp Log (Borehole #JH-84-12)', depth: '480 m', type: 'Scanned Borehole Log', status: 'Digitized OCR (94% conf.)', score: 0.94, excerpt: 'Encountered Seam XVIII at depth 342.5m; gas emission rate 7.8 m3/tonne. Barakar formation sandstones predominate.' },
+  { id: 'HA-1992-RG', year: 1992, mine: 'Raniganj Coalfield', sub: 'ECL', title: 'Raniganj Basin Geological Cross-Section & Fault Analysis', depth: '310 m', type: 'Digitized Map & Memoir', status: 'Digitized OCR (91% conf.)', score: 0.89, excerpt: 'Disraigarh seam thickness recorded at 4.2m with dip of 6 degrees. Colliery boundaries reconciled with GSI base map.' },
+  { id: 'HA-1998-SG', year: 1998, mine: 'Singrauli Coalfield', sub: 'NCL', title: 'Jayant & Dudhichua Block Overburden & Stripping Ratio Study', depth: '220 m', type: 'Historical Technical Report', status: 'Digitized OCR (96% conf.)', score: 0.92, excerpt: 'Historical stripping ratio estimated at 2.9:1. Heavy earth moving machinery deployment roadmap for FY 1999-2004.' },
+  { id: 'HA-2005-TL', year: 2005, mine: 'Talcher Coalfield', sub: 'MCL', title: 'Talcher Thermal Coal Reserve & Ash Content Assessment', depth: '190 m', type: 'Resource Assessment', status: 'Digitized PDF', score: 0.87, excerpt: 'Measured non-coking coal resources in Ananta and Bharatpur blocks total 4.2 billion tonnes. Average gross calorific value 4,200 kcal/kg.' },
+  { id: 'HA-2011-KR', year: 2011, mine: 'Korba Coalfield', sub: 'SECL', title: 'Gevra Opencast Expansion & Hydrogeological Survey', depth: '260 m', type: 'Hydrogeological Memoir', status: 'Digitized PDF', score: 0.85, excerpt: 'Aquifer recharge rate measured at 14.2% of annual precipitation. Dewatering schedule formulated for lower seam extraction.' },
+]
+
+export const SUBSIDIARY_TOPICS = {
+  'Full Corpus': [
+    { label: 'Coal Reserve Estimation', weight: 0.89 },
+    { label: 'Underground Longwall Mining', weight: 0.84 },
+    { label: 'Environmental & Forest Clearance', weight: 0.78 },
+    { label: 'Production Targets & Dispatch', weight: 0.76 },
+    { label: 'Geological Seam Stratigraphy', weight: 0.73 },
+    { label: 'Overburden Removal (OBR)', weight: 0.69 },
+    { label: 'Safety & DGMS Compliance', weight: 0.65 },
+    { label: 'Hydrogeology & Methane Drainage', weight: 0.61 },
+  ],
+  ECL: [
+    { label: 'Raniganj Coalfield Seam Analysis', weight: 0.91 },
+    { label: 'Sonepur Bazari & Rajmahal OCP', weight: 0.86 },
+    { label: 'Longwall Mechanisation (Jhanjra)', weight: 0.82 },
+    { label: 'OBR Stripping Ratio Compliance', weight: 0.74 },
+  ],
+  BCCL: [
+    { label: 'Prime Coking Coal Reserves', weight: 0.93 },
+    { label: 'Jharia Coalfield Mine Fire Control', weight: 0.88 },
+    { label: 'Methane Gas (Firedamp) Drainage', weight: 0.81 },
+    { label: 'Underground Gallery Rehabilitation', weight: 0.75 },
+  ],
+  NCL: [
+    { label: 'Singrauli Opencast Operations', weight: 0.92 },
+    { label: 'Dragline Utilisation & Stripping', weight: 0.87 },
+    { label: 'Dudhichua & Jayant Block Output', weight: 0.81 },
+    { label: 'LTIFR Zero-Accident Protocol', weight: 0.79 },
+  ],
+  MCL: [
+    { label: 'Talcher & Ib Valley Exploration', weight: 0.90 },
+    { label: 'Thermal Power Utility Coal Dispatch', weight: 0.85 },
+    { label: 'MoEFCC Air & Water Compliance', weight: 0.80 },
+    { label: 'Borehole Core Recovery Audits', weight: 0.74 },
+  ],
+  SECL: [
+    { label: 'Gevra & Kusmunda Mega-OCP Output', weight: 0.94 },
+    { label: 'Korba Coalfield Stratigraphy', weight: 0.86 },
+    { label: 'Production Target Surpluses', weight: 0.79 },
+    { label: 'Rail Infrastructure & Logistics', weight: 0.73 },
   ],
 }
 
+export const QA_KNOWLEDGE_BASE = [
+  {
+    keywords: ['reserve', 'eastern', 'ecl', 'total coal reserve'],
+    answer: `Based on the geological survey reports and GSI data, **total proven coal reserves in the Eastern Coalfields region stand at 18.7 billion tonnes** (measured resources: 31.2 billion tonnes) as of FY 2023-24. The Jharia coalfield alone holds **3.55 billion tonnes of prime coking coal** (~19% of national total), while Raniganj and adjoining ECL blocks provide vital high-grade non-coking coal. Seam thickness ranges between 1.2m and 6.4m with an average ash content of 24.3%.`,
+    sources: [
+      { doc: 'CMPDI_Annual_Geological_Survey_Report_2023.pdf', page: 14, score: 0.95, excerpt: '...total proven reserves in Eastern Coalfields zone stand at 18.7 billion tonnes as assessed by GSI in collaboration with CMPDI...' },
+      { doc: 'Coal_Reserve_Estimation_India_2023.pdf', page: 8, score: 0.91, excerpt: '...India total coal resources stand at 361.30 BT; Eastern Coalfields region accounts for 12.6% of national proven reserve base...' },
+      { doc: 'Jharia_Coalfield_Resource_Assessment_2022.pdf', page: 22, score: 0.86, excerpt: '...prime coking coal reserves in Jharia estimated at 3.55 billion tonnes, representing 19.0% of national total...' },
+    ],
+  },
+  {
+    keywords: ['thickness', 'jharia', 'seam', 'kusunda'],
+    answer: `In the Jharia coalfield, **coal seam thickness averages 3.4 metres**, with individual seams ranging from 0.8 m up to 24.0 m in the Lower Gondwana (Barakar) formation. The thickest recorded seam is the **XVIII seam in the Kusunda area measuring 24.0 metres**. Dip of seams ranges from 4° to 15° towards south/southeast at depths from surface to 600 metres. Average ash content is 24.3%, with metallurgical-grade coking seams registering 18–21% ash.`,
+    sources: [
+      { doc: 'Jharia_Coalfield_Resource_Assessment_2022.pdf', page: 22, score: 0.96, excerpt: '...seam thickness in Jharia block averages 3.4 metres, with individual seams ranging from 0.8 m to 24.0 m (XVIII seam, Kusunda)...' },
+      { doc: 'CMPDI_Annual_Geological_Survey_Report_2023.pdf', page: 3, score: 0.89, excerpt: '...average coal seam thickness across surveyed blocks is 4.1 metres; Jharia Barakar formation exhibits seam dip 4 to 15 degrees...' },
+    ],
+  },
+  {
+    keywords: ['production', 'target', 'q3', 'dispatch', 'fy2024'],
+    answer: `During Q3 FY 2023-24, **coal dispatch reached 142.6 MT**, exceeding the target of 138 MT by **3.3%**. Quarterly coal production reached **7.84 MT against a target of 7.50 MT (+4.5% achievement)**, marking a **7.2% YoY growth**. This performance was driven by enhanced deployment of powered roof support longwalls at Sonepur Bazari & Jhanjra mines, alongside 94% mechanical loading in Rajmahal opencast.`,
+    sources: [
+      { doc: 'ECL_Production_Report_Q3_FY2024.pdf', page: 1, score: 0.97, excerpt: '...quarterly coal production reached 7.84 MT (target 7.50 MT, +4.5%). Cumulative coal dispatch reached 142.6 MT, surpassing target of 138 MT...' },
+      { doc: 'ECL_Production_Report_Q3_FY2024.pdf', page: 6, score: 0.90, excerpt: '...7.2% YoY increase driven by longwall deployment in Jhanjra and improved dragline cycle times at Rajmahal OCP...' },
+    ],
+  },
+  {
+    keywords: ['environment', 'compliance', 'mcl', 'moefcc', 'air', 'water'],
+    answer: `All active coalfields across Mahanadi Coalfields Limited (MCL) maintain **current and valid environmental clearances (EC)** with the next comprehensive MoEFCC review scheduled for **FY 2026-27**. Continuous ambient air quality monitoring (CAAQMS) and effluent treatment systems operate at 100% compliance across Talcher and Ib Valley. Zero material non-compliance notices under the Environment Protection Act, 1986 were recorded during the reporting period.`,
+    sources: [
+      { doc: 'MCL_Environmental_Compliance_FY2023.pdf', page: 4, score: 0.94, excerpt: '...all environmental clearances for Talcher and Ib Valley operational blocks are valid through FY 2026-27 with zero non-compliance under EPA 1986...' },
+      { doc: 'CMPDI_Annual_Geological_Survey_Report_2023.pdf', page: 62, score: 0.88, excerpt: '...effluent treatment and dust suppression systems meet CPCB norms; green belt plantation target achieved at 112%...' },
+    ],
+  },
+  {
+    keywords: ['obr', 'stripping', 'ratio', 'overburden', 'opencast'],
+    answer: `The **average Overburden Removal (OBR) stripping ratio across CIL opencast mines is 3.8 cubic metres per tonne of coal extracted**. At Rajmahal OCP the stripping ratio is 3.2:1, while at Sonepur Bazari it stands at 4.1:1. Overburden removal during Q3 reached **42.1 million cubic metres (Mcm)** against a planned target of 40.0 Mcm (+5.25% achievement).`,
+    sources: [
+      { doc: 'ECL_Production_Report_Q3_FY2024.pdf', page: 1, score: 0.96, excerpt: '...overburden removal 42.1 Mcm vs target 40.0 Mcm; OBR stripping ratio recorded at 3.8 cubic metres per tonne of coal...' },
+      { doc: 'SECL_Production_Forecast_FY2025.pdf', page: 9, score: 0.89, excerpt: '...opencast stripping ratios across mega projects (Gevra, Kusmunda) optimized with 42-cum shovel-dumper combinations...' },
+    ],
+  },
+  {
+    keywords: ['safety', 'ltifr', 'dgms', 'incident', 'fatality'],
+    answer: `The **Lost Time Injury Frequency Rate (LTIFR) for FY 2023-24 improved to 0.23 per lakh man-shifts**, representing a **14% year-on-year reduction** and surpassing Directorate General of Mines Safety (DGMS) benchmarks. Zero fatal incidents occurred in mechanized longwall and continuous miner sections. Safety training coverage reached 98.4% of all front-line mining personnel.`,
+    sources: [
+      { doc: 'NCL_Safety_Incident_Report_FY2024.pdf', page: 18, score: 0.95, excerpt: '...LTIFR stands at 0.23 per lakh man-shifts vs 0.27 in FY2023; safety compliance audits completed across 100% of working districts...' },
+      { doc: 'CMPDI_Annual_Geological_Survey_Report_2023.pdf', page: 71, score: 0.88, excerpt: '...mechanised roof bolting and real-time convergence monitoring reduced strata control incidents by 31%...' },
+    ],
+  },
+  {
+    keywords: ['methane', 'firedamp', 'drainage', 'gas'],
+    answer: `Active **methane gas drainage capacity across Jharia coalfield mines is approximately 12,000 m³/hour** (approx. 288,000 m³/day) through a combined network of in-seam boreholes and surface pre-drainage wells. In shallow seams gas content averages 4.8 m³/tonne, rising to 8.2 m³/tonne in deep seams below 200m depth. Commercial coalbed methane (CBM) capture feasibility studies are ongoing with CMPDI.`,
+    sources: [
+      { doc: 'CMPDI_Annual_Geological_Survey_Report_2023.pdf', page: 3, score: 0.96, excerpt: '...firedamp drainage capacity in BCCL active mines is 12,000 m3/hr; gas content rises from 4.8 m3/t in shallow seams to 8.2 m3/t below 200m...' },
+      { doc: 'Jharia_Coalfield_Resource_Assessment_2022.pdf', page: 31, score: 0.90, excerpt: '...drainage network prevents flammable gas accumulation in underground longwall return airways...' },
+    ],
+  },
+  {
+    keywords: ['coking', 'non-coking', 'grade', 'metallurgical'],
+    answer: `India's total prime coking coal reserves stand at **3.55 billion tonnes**, situated almost exclusively in the **Jharia coalfield under BCCL jurisdiction** (~19% of national coking resource). Medium and semi-coking coals contribute an additional 5.1 billion tonnes across Raniganj and Central Coalfields. Non-coking coal constitutes 81.6% of national resources (predominantly Grades D through G), powering national thermal generation.`,
+    sources: [
+      { doc: 'Coal_Reserve_Estimation_India_2023.pdf', page: 12, score: 0.95, excerpt: '...coking coal constitutes 18.4% of national reserves; prime coking coal estimated at 3.55 BT concentrated in Jharia coalfield...' },
+      { doc: 'CMPDI_Annual_Geological_Survey_Report_2023.pdf', page: 2, score: 0.91, excerpt: '...non-coking coal accounts for 81.6% of national proven inventory of 148.46 billion tonnes...' },
+    ],
+  },
+]
+
+export const STUB_ANSWER = QA_KNOWLEDGE_BASE[0]
+
 export const PARL_STUB = `MINISTRY OF COAL — PARLIAMENTARY QUESTION RESPONSE
 
-Question No.: Starred Q. 47 (Lok Sabha Session — Demo)
+Question No.: Starred Q. 47 (Lok Sabha Session — Government of India)
 Subject: Coal Reserve Status and Production Performance in Eastern India
 
 REPLY ON BEHALF OF THE MINISTER OF COAL:
 
-(a) The total proven coal reserves in the Eastern Coalfields region (covering Jharia, Raniganj, and adjoining blocks) stand at 18.7 billion tonnes as assessed jointly by the Geological Survey of India (GSI) and CMPDI during 2022-23. This represents approximately 26.4% of India's total coal reserve base.
+(a) The total proven coal reserves in the Eastern Coalfields region (covering Jharia, Raniganj, and adjoining blocks) stand at 18.7 billion tonnes as assessed jointly by the Geological Survey of India (GSI) and CMPDI during 2022-23. This represents approximately 12.6% of India's total proven coal reserve base.
 
-(b) Production during Q3 FY 2023-24 reached 142.6 MT, exceeding the set target of 138 MT by 3.3%. This improvement is attributable to enhanced deployment of longwall technology and increased mechanisation in underground mines operated by ECL and BCCL.
+(b) Production during Q3 FY 2023-24 reached 7.84 MT (exceeding target by 4.5%), while cumulative dispatch reached 142.6 MT, exceeding the set target of 138 MT by 3.3%. This improvement is attributable to enhanced deployment of longwall technology and increased mechanisation in underground mines operated by ECL and BCCL.
 
 (c) All environmental clearances for active coalfields in the region are current and valid, with the next scheduled review in FY 2026-27. No material non-compliance has been recorded under the Environment Protection Act, 1986 during the reporting period.
 
@@ -81,18 +193,7 @@ REPLY ON BEHALF OF THE MINISTER OF COAL:
 Sources: [1] CMPDI Annual Geological Survey Report 2023, p.14  |  [2] ECL Production Report Q3 FY2024, p.6  |  [3] Jharia Coalfield Resource Assessment 2022, p.22
 This response has been automatically drafted for review by the authorised officer before submission.`
 
-export const STUB_TOPICS = [
-  { label: 'Coal Reserve Estimation',        weight: 0.89 },
-  { label: 'Underground Mining Operations',  weight: 0.84 },
-  { label: 'Environmental Compliance',       weight: 0.78 },
-  { label: 'Production Targets & Output',    weight: 0.76 },
-  { label: 'Geological Seam Analysis',       weight: 0.73 },
-  { label: 'Overburden Removal (OBR)',        weight: 0.69 },
-  { label: 'Safety & DGMS Compliance',       weight: 0.65 },
-  { label: 'Hydrogeology & Water Table',     weight: 0.61 },
-  { label: 'Borehole Drilling & Surveys',    weight: 0.58 },
-  { label: 'Coking vs Non-Coking Coal',      weight: 0.54 },
-]
+export const STUB_TOPICS = SUBSIDIARY_TOPICS['Full Corpus']
 
 export const STUB_KEYWORDS = [
   'coalfield','seam','reserves','overburden','longwall','borehole',

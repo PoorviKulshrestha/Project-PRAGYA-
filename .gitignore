@@ -1,3 +1,28 @@
 .env
 .env.*
 !.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Node / Vite builds
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.vite/
+
+# Logs and OS debris
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

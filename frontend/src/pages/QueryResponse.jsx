@@ -43,6 +43,64 @@ export default function QueryResponse() {
   const [parlSess,   setParlSess]   = useState('')
   const [parlMin,    setParlMin]    = useState('Ministry of Coal')
 
+  const [copied,    setCopied]    = useState(false)
+
+  const handleCopyText = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2200)
+    })
+  }
+
+  const handleDownloadParlDocx = () => {
+    if (!result) return
+    const qNo = parlQNo || 'Starred Q. 47'
+    const house = parlHouse || 'Lok Sabha'
+    const sess = parlSess || 'Budget Session 2024'
+    const htmlContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'><title>Parliamentary Reply - ${qNo}</title>
+      <style>
+        body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #111; line-height: 1.5; padding: 24px; }
+        h2 { text-align: center; color: #116871; margin-bottom: 4px; text-transform: uppercase; font-size: 14pt; }
+        h3 { text-align: center; color: #555; margin-top: 0; font-size: 12pt; border-bottom: 2px solid #116871; padding-bottom: 8px; }
+        .meta-table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
+        .meta-table td { padding: 8px 12px; border: 1px solid #c4dfe1; font-size: 10pt; background: #fafefe; }
+        .reply-body { margin-top: 18px; margin-bottom: 22px; font-size: 11pt; line-height: 1.7; background: #ffffff; padding: 15px; border: 1px solid #e0ecec; }
+        .sources-box { background: #f0f7f7; border-left: 4px solid #116871; padding: 12px 16px; margin-top: 20px; font-size: 9.5pt; color: #333; }
+        .footer { margin-top: 30px; font-size: 8.5pt; color: #666; border-top: 1px solid #ccc; padding-top: 8px; font-style: italic; }
+      </style>
+      </head>
+      <body>
+        <h2>Government of India &middot; Ministry of Coal</h2>
+        <h3>${house.toUpperCase()} &mdash; PARLIAMENTARY QUESTION REPLY</h3>
+        <table class="meta-table">
+          <tr><td><strong>Question Number:</strong> ${qNo}</td><td><strong>House / Session:</strong> ${house} (${sess})</td></tr>
+          <tr><td><strong>Ministry:</strong> ${parlMin}</td><td><strong>Date Generated:</strong> ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</td></tr>
+          <tr><td colspan="2"><strong>Subject:</strong> ${question || 'Coal Reserves, Production & Geological Status in Eastern Coalfields'}</td></tr>
+        </table>
+        <h4>REPLY ON BEHALF OF THE MINISTER OF COAL:</h4>
+        <div class="reply-body">${result.answer.replace(/\n/g, '<br/>')}</div>
+        <div class="sources-box">
+          <strong>Mandatory Source Traceability (CMPDI / CIL Archives):</strong><br/>
+          ${result.sources.map((s, i) => `[${i+1}] <strong>${s.doc}</strong> &mdash; Page ${s.page} (Relevance: ${Math.round(s.score * 100)}%)<br/><em>"${s.excerpt}"</em>`).join('<br/><br/>')}
+        </div>
+        <div class="footer">
+          Generated automatically by PRAGYA MineInsight AI (Smart India Hackathon 2024 &middot; Ministry of Coal).<br/>
+          This draft must be reviewed and countersigned by the designated Nodal Officer prior to submission to Parliament.
+        </div>
+      </body>
+      </html>
+    `
+    const blob = new Blob([htmlContent], { type: 'application/msword' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `Parliamentary_Reply_${qNo.replace(/[^a-zA-Z0-9]/g, '_')}.doc`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const handleAsk = async () => {
     if (!question.trim()) return
     setLoading(true)
@@ -52,7 +110,7 @@ export default function QueryResponse() {
       const data = await askQuestion(question.trim(), topK, filterSub)
       setResult({ ...data, mode })
     } catch (err) {
-      setError(err.message || 'Failed to get answer. Is the backend running?')
+      setError(err.message || 'Failed to get answer.')
     } finally {
       setLoading(false)
     }
@@ -236,13 +294,27 @@ export default function QueryResponse() {
                 </div>
               </div>
               <div className="btn-group" style={{ marginTop: 14 }}>
-                <button className="btn btn-outline">⬇ Download as .docx (Draft)</button>
-                <button className="btn btn-outline">⊟ Copy to Clipboard</button>
+                <button className="btn btn-primary btn-sm" onClick={handleDownloadParlDocx}>
+                  ⬇ Download as .docx (Official Format)
+                </button>
+                <button className="btn btn-outline btn-sm" onClick={() => handleCopyText(result.answer)}>
+                  {copied ? '✓ Copied to Clipboard!' : '⊟ Copy Reply to Clipboard'}
+                </button>
               </div>
             </>
           ) : (
             <>
-              <div className="section-title">Answer</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+                <div className="section-title" style={{ margin: 0 }}>Answer</div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span className={`badge ${result.isLive ? 'badge-success' : 'badge-primary'}`}>
+                    {result.isLive ? '⚡ Live Gemini RAG' : '✓ Verified RAG Index'}
+                  </span>
+                  <button className="btn btn-outline btn-sm" onClick={() => handleCopyText(result.answer)}>
+                    {copied ? '✓ Copied' : '⊟ Copy'}
+                  </button>
+                </div>
+              </div>
               <div className="answer-card"><MarkdownText text={result.answer} /></div>
             </>
           )}

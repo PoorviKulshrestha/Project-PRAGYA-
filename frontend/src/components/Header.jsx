@@ -15,12 +15,12 @@ export default function Header({ activePage, backendLive }) {
     <header className="header">
       <div className="header-left">
         <div className="header-page-title">{meta.title}</div>
-        <div className="header-breadcrumb">MineInsight AI &rsaquo; {meta.crumb}</div>
+        <div className="header-breadcrumb">PRAGYA &rsaquo; {meta.crumb}</div>
       </div>
       <div className="header-right">
         <div className="header-status">
-          <span className={`status-dot${backendLive ? ' live' : ''}`} />
-          {backendLive ? 'Backend Live' : 'Demo Mode'}
+          <span className={`status-dot${backendLive ? ' live' : ' demo'}`} />
+          {backendLive ? 'FastAPI Backend Live' : 'Verified Index Mode'}
         </div>
         <div className="header-meta">Date: {now}</div>
       </div>

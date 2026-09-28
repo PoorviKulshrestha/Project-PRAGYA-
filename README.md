@@ -1,18 +1,18 @@
-# CMPDI MineInsight AI
+# PRAGYA — CMPDI MineInsight AI
 **AI-Powered Geological, Mining & Reporting Solution**  
-Smart India Hackathon 2024 · Ministry of Coal / CIL · Team Runtime Error
+Smart India Hackathon · Ministry of Coal / Coal India Limited (CIL) · Team Runtime Error
 
 ---
 
 ## Quick Start
 
 ### 1. Install Node.js (required for React frontend)
-Download from https://nodejs.org — pick the LTS version for Windows.
+Download from https://nodejs.org — LTS version for Windows.
 Verify: `node --version` and `npm --version`
 
 ### 2. Install frontend dependencies
 ```bash
-cd "Team Runtime Error/frontend"
+cd frontend
 npm install
 ```
 
@@ -20,19 +20,16 @@ npm install
 ```bash
 npm run dev
 ```
-Open http://localhost:3000
+Open **http://localhost:3000** in your browser.
 
-### 4. (Later) Install Python backend dependencies
+### 4. (Optional) Run the FastAPI RAG backend
 ```bash
-cd ..
+# In the project root:
 pip install -r requirements.txt
-```
-
-### 5. (Later) Start the FastAPI backend
-```bash
 set GEMINI_API_KEY=your_key_here
-uvicorn api.main:app --reload --port 8000
+uvicorn backend:app --reload --port 8000
 ```
+*Note: The frontend has built-in offline retrieval and works seamlessly out of the box even without starting the backend.*
 
 ---
 

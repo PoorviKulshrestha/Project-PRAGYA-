@@ -16,4 +16,13 @@ venv/
 node_modules/
 frontend/node_modules/
 frontend/dist/
+dist/
 .vite/
+
+# Logs and OS debris
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

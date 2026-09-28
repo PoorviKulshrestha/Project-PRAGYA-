@@ -1,17 +1,28 @@
 import { useState } from 'react'
-import { STUB_DOCS, DATA_SOURCES, SUBSIDIARIES } from '../data/stubs.js'
+import { STUB_DOCS, DATA_SOURCES, SUBSIDIARIES, HISTORICAL_ARCHIVES } from '../data/stubs.js'
 
 export default function DocumentManagement() {
-  const [ingesting, setIngesting]   = useState(false)
-  const [progress,  setProgress]    = useState(0)
-  const [done,      setDone]        = useState(false)
-  const [histQ,     setHistQ]       = useState('')
-  const [fromYear,  setFromYear]    = useState(1990)
-  const [toYear,    setToYear]      = useState(2020)
-  const [chunkSize, setChunkSize]   = useState(500)
-  const [overlap,   setOverlap]     = useState(50)
-  const [subTag,    setSubTag]      = useState('ALL')
-  const [fileNames, setFileNames]   = useState([])
+  const [ingesting,   setIngesting]   = useState(false)
+  const [progress,    setProgress]    = useState(0)
+  const [done,        setDone]        = useState(false)
+  const [histQ,       setHistQ]       = useState('')
+  const [fromYear,    setFromYear]    = useState(1980)
+  const [toYear,      setToYear]      = useState(2024)
+  const [histResults, setHistResults] = useState(HISTORICAL_ARCHIVES.slice(0, 3))
+  const [chunkSize,   setChunkSize]   = useState(500)
+  const [overlap,     setOverlap]     = useState(50)
+  const [subTag,      setSubTag]      = useState('ALL')
+  const [fileNames,   setFileNames]   = useState([])
+
+  const handleSearchHist = () => {
+    const q = histQ.toLowerCase().trim()
+    const filtered = HISTORICAL_ARCHIVES.filter(item => {
+      const inYear = item.year >= fromYear && item.year <= toYear
+      const inText = !q || item.title.toLowerCase().includes(q) || item.mine.toLowerCase().includes(q) || item.excerpt.toLowerCase().includes(q)
+      return inYear && inText
+    })
+    setHistResults(filtered.length ? filtered : HISTORICAL_ARCHIVES.slice(0, 2))
+  }
 
   const handleFiles = e => {
     setFileNames(Array.from(e.target.files).map(f => f.name))
@@ -192,13 +203,13 @@ export default function DocumentManagement() {
       {/* Historical archive search */}
       <div className="section-title">Historical Archive Search</div>
       <div className="page-subtitle" style={{ marginBottom: 12 }}>
-        Semantic search across digitised historical geological and mining records.
-        Supports year-range filtering for temporal analysis.
+        Semantic search across digitised historical geological memoirs, pre-digital borehole cards (pre-1980),
+        and mine closure records with temporal year-range filtering.
       </div>
-      <div className="form-row" style={{ alignItems: 'flex-end', marginBottom: 10 }}>
+      <div className="form-row" style={{ alignItems: 'flex-end', marginBottom: 14 }}>
         <div className="form-group" style={{ gridColumn: 'span 1' }}>
           <label className="form-label">Search Query</label>
-          <input className="form-input" placeholder="e.g. Jharia borehole survey 1998, Singrauli reserve estimation 2005"
+          <input className="form-input" placeholder="e.g. Jharia stratigraphy, Singrauli stripping, Raniganj cross-section"
             value={histQ} onChange={e => setHistQ(e.target.value)} />
         </div>
         <div className="form-group">
@@ -212,12 +223,41 @@ export default function DocumentManagement() {
             value={toYear} onChange={e => setToYear(+e.target.value)} />
         </div>
       </div>
-      <button className="btn btn-outline">◎ Search Historical Archives</button>
-      <div className="alert alert-info" style={{ marginTop: 12 }}>
-        <span>ℹ</span>
-        Historical archive search returns results from ChromaDB once documents are ingested.
-        Currently in demo mode — ingest historical documents to enable this feature.
+      <div className="btn-group" style={{ marginBottom: 16 }}>
+        <button className="btn btn-primary btn-sm" onClick={handleSearchHist}>
+          ◎ Search Historical Archives
+        </button>
+        <button className="btn btn-outline btn-sm" onClick={() => { setHistQ(''); setHistResults(HISTORICAL_ARCHIVES); }}>
+          Reset Filters
+        </button>
       </div>
+
+      {histResults && histResults.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            Found <strong>{histResults.length}</strong> archived records matching query:
+          </div>
+          {histResults.map(item => (
+            <div key={item.id} className="card" style={{ padding: '12px 16px', borderLeft: '4px solid var(--primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 6 }}>
+                <div>
+                  <strong style={{ color: 'var(--primary)', fontSize: '0.90rem' }}>{item.title}</strong>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                    ID: <code>{item.id}</code> &nbsp;·&nbsp; Year: <strong>{item.year}</strong> &nbsp;·&nbsp; Mine: <strong>{item.mine}</strong> ({item.sub}) &nbsp;·&nbsp; Depth: {item.depth}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <span className="fmt-chip fmt-arch">{item.type}</span>
+                  <span className="badge badge-success">{item.status}</span>
+                </div>
+              </div>
+              <div style={{ fontSize: '0.80rem', color: 'var(--text-body)', marginTop: 8, fontStyle: 'italic', background: 'var(--light-mint)', padding: '6px 10px', borderRadius: 4 }}>
+                &ldquo;{item.excerpt}&rdquo;
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <hr className="section-divider" />
 

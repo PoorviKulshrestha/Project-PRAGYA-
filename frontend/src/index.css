@@ -109,9 +109,22 @@ a:hover { text-decoration: underline; }
 }
 .status-dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: #f0ad4e; box-shadow: 0 0 4px #f0ad4e;
+  background: #f0ad4e; box-shadow: 0 0 5px #f0ad4e;
 }
-.status-dot.live { background: #3cb371; box-shadow: 0 0 4px #3cb371; }
+.status-dot.live { 
+  background: #10b981; 
+  box-shadow: 0 0 6px #10b981; 
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+.status-dot.demo {
+  background: #0ea5e9;
+  box-shadow: 0 0 6px #0ea5e9;
+}
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.85; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.85; }
+}
 .header-meta { font-size: 0.72rem; color: var(--text-muted); }
 
 /* ── Typography ────────────────────────────────────────────────────────── */
@@ -125,6 +138,10 @@ a:hover { text-decoration: underline; }
   background: #fff; border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 20px 22px;
   box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
 }
 .card-title {
   font-size: 0.82rem; font-weight: 600; color: var(--primary);
@@ -139,6 +156,11 @@ a:hover { text-decoration: underline; }
   border-top: 3px solid var(--primary);
   border-radius: var(--radius-md); padding: 16px 18px;
   box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 .kpi-val { font-size: 1.75rem; font-weight: 800; color: var(--primary); line-height: 1.1; }
 .kpi-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-top: 4px; }

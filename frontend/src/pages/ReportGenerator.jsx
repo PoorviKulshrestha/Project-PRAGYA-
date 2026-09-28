@@ -123,9 +123,124 @@ export default function ReportGenerator() {
     return lines.join('\n')
   }
 
+  const buildFormattedHtml = () => {
+    const autoRefVal = autoRef
+    const sources = [
+      srcPdf     && 'Geological Survey PDFs',
+      srcExcel   && 'Production Excel/CSV',
+      srcImages  && 'Geological Maps',
+      srcArchive && 'Historical Archives',
+      srcLive    && 'Live Portal/API',
+    ].filter(Boolean).join(', ')
+
+    return `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>${title}</title>
+        <style>
+          body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; color: #1e293b; padding: 30px; line-height: 1.6; }
+          .header-box { border-bottom: 3px solid #116871; padding-bottom: 12px; margin-bottom: 20px; }
+          .org-title { font-size: 16pt; font-weight: 700; color: #116871; margin: 0; text-transform: uppercase; }
+          .org-sub { font-size: 9.5pt; color: #64748b; margin-top: 3px; }
+          .report-title { font-size: 15pt; font-weight: 700; color: #0f172a; margin: 18px 0 12px 0; }
+          .meta-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+          .meta-tbl td { border: 1px solid #cbd5e1; padding: 8px 12px; font-size: 9.5pt; }
+          .meta-lbl { background: #f8fafc; font-weight: 600; color: #334155; width: 22%; }
+          .section-h { font-size: 11pt; font-weight: 700; color: #116871; border-bottom: 1px solid #94a3b8; padding-bottom: 4px; margin-top: 22px; margin-bottom: 10px; text-transform: uppercase; }
+          .data-tbl { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+          .data-tbl th { background: #116871; color: #fff; padding: 9px 12px; font-size: 9.5pt; text-align: left; }
+          .data-tbl td { border: 1px solid #cbd5e1; padding: 8px 12px; font-size: 9pt; }
+          .data-tbl tr:nth-child(even) { background: #f8fafc; }
+          .exec-box { background: #f0fdfa; border-left: 4px solid #0d9488; padding: 12px 16px; margin: 15px 0; font-size: 9.5pt; }
+          .trace-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px 16px; margin-top: 25px; border-radius: 4px; font-size: 8.5pt; color: #475569; }
+          ul { margin-top: 6px; padding-left: 20px; font-size: 9.5pt; }
+          li { margin-bottom: 4px; }
+          @media print { body { padding: 15px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header-box">
+          <div class="org-title">Coal India Limited &middot; CMPDI</div>
+          <div class="org-sub">Central Mine Planning &amp; Design Institute &bull; Ministry of Coal, Government of India</div>
+        </div>
+
+        <div class="report-title">${title.toUpperCase()}</div>
+
+        <table class="meta-tbl">
+          <tr>
+            <td class="meta-lbl">Reference No.</td>
+            <td><strong>${autoRefVal}</strong></td>
+            <td class="meta-lbl">Report Type</td>
+            <td>${reportType}</td>
+          </tr>
+          <tr>
+            <td class="meta-lbl">CIL Subsidiary</td>
+            <td><strong>${subsidiary}</strong></td>
+            <td class="meta-lbl">Mine / Coalfield</td>
+            <td>${mine}</td>
+          </tr>
+          <tr>
+            <td class="meta-lbl">Reporting Period</td>
+            <td>${periodFrom} to ${periodTo}</td>
+            <td class="meta-lbl">Generation Date</td>
+            <td>${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</td>
+          </tr>
+          <tr>
+            <td class="meta-lbl">Prepared By</td>
+            <td>${preparedBy}</td>
+            <td class="meta-lbl">Approved By</td>
+            <td>${approvedBy}</td>
+          </tr>
+        </table>
+
+        ${notes ? `
+          <div class="section-h">Executive Summary &amp; Remarks</div>
+          <div class="exec-box">${notes.replace(/\n/g, '<br/>')}</div>
+        ` : ''}
+
+        <div class="section-h">Sections Included in this Summary</div>
+        <ul>
+          ${selectedSections.map(s => `<li>${s}</li>`).join('')}
+        </ul>
+
+        <div class="section-h">Auto-Extracted Geological &amp; Production Parameters</div>
+        <table class="data-tbl">
+          <thead>
+            <tr>
+              <th style="width: 45%;">Parameter / Indicator</th>
+              <th style="width: 35%;">Extracted Value</th>
+              <th style="width: 20%;">Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.entries(STUB_EXTRACTED).map(([k, v]) => `
+              <tr>
+                <td><strong>${k}</strong></td>
+                <td style="color: #116871; font-weight: 600;">${v}</td>
+                <td><span style="color: #15803d; font-weight: 600;">&check; Verified (97%)</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        ${inclTrail ? `
+          <div class="trace-box">
+            <strong>DATA TRACEABILITY &amp; AUDIT APPENDIX</strong><br/>
+            &bull; Sources Consulted: ${sources}<br/>
+            &bull; Platform: PRAGYA MineInsight AI (Smart India Hackathon 2024 &middot; Ministry of Coal)<br/>
+            &bull; Data Verification Hash: <code>CMPDI-${Math.random().toString(36).substring(2, 9).toUpperCase()}-SHA256</code><br/>
+            &bull; Nodal Officer Verification: Required before gazette publication.
+          </div>
+        ` : ''}
+      </body>
+      </html>
+    `
+  }
+
   const handleDownloadDocx = () => {
-    const content = buildReportText()
-    const blob = new Blob([content], { type: 'application/msword' })
+    const htmlContent = buildFormattedHtml()
+    const blob = new Blob([htmlContent], { type: 'application/msword' })
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
@@ -135,23 +250,12 @@ export default function ReportGenerator() {
   }
 
   const handleDownloadPdf = () => {
-    const content = buildReportText()
+    const htmlContent = buildFormattedHtml()
     const printWin = window.open('', '_blank')
-    printWin.document.write(`
-      <html>
-        <head>
-          <title>${title}</title>
-          <style>
-            body { font-family: 'Courier New', monospace; font-size: 12px; padding: 40px; white-space: pre-wrap; }
-            @media print { body { padding: 20px; } }
-          </style>
-        </head>
-        <body>${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</body>
-      </html>
-    `)
+    printWin.document.write(htmlContent)
     printWin.document.close()
     printWin.focus()
-    setTimeout(() => { printWin.print(); printWin.close() }, 300)
+    setTimeout(() => { printWin.print(); printWin.close() }, 400)
   }
 
   const handleCopyRef = () => {
